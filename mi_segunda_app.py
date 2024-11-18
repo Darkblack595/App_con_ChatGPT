@@ -3,6 +3,9 @@ import streamlit as st
 # Título
 st.title("Conversor Universal")
 
+# Marca
+st.write("Hecho por Juan Pablo Gaviria Orozco")
+
 # Descripción
 st.write("Selecciona una categoría y el tipo de conversión que deseas realizar.")
 
