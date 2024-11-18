@@ -13,6 +13,15 @@ def calcular_papa(creditos_notas):
     total_creditos = sum(credito for credito, _ in creditos_notas)
     return total_peso / total_creditos if total_creditos > 0 else 0
 
+# Lista de tipologías actualizada
+tipologias = [
+    "Libre Elección",
+    "Fundamentación Obligatoria",
+    "Fundamentación Optativa",
+    "Disciplinar Optativa",
+    "Disciplinar Obligatoria",
+]
+
 # Ventana de "PAPA Global"
 if menu == "PAPA Global":
     st.header("Cálculo del PAPA Global")
@@ -52,10 +61,10 @@ elif menu == "PAPA por Tipología":
     
     # Variables de sesión para almacenar datos por tipología
     if "papa_tipologia" not in st.session_state:
-        st.session_state["papa_tipologia"] = {tipo: [] for tipo in ["Básica", "Profesional", "Electiva"]}
+        st.session_state["papa_tipologia"] = {tipo: [] for tipo in tipologias}
 
     # Selección de tipología
-    tipologia = st.selectbox("Selecciona la tipología:", ["Básica", "Profesional", "Electiva"])
+    tipologia = st.selectbox("Selecciona la tipología:", tipologias)
     
     # Entrada de datos
     with st.form("form_tipologia"):
