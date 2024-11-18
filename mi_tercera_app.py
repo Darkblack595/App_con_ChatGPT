@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 
 # Configuración inicial
-st.title("Gestor de Finanzas Personales")
+st.title("Gestor de Finanzas Personales(Hecho por Juan Pablo Gaviria Orozco)")
 st.sidebar.title("Menú")
 menu = st.sidebar.selectbox("Selecciona una opción:", ["Registro", "Reportes", "Metas de Ahorro"])
 
@@ -54,9 +54,15 @@ elif menu == "Reportes":
     st.header("Reportes Semanales y Mensuales")
     hoy = datetime.date.today()
 
+    # Convertir la columna "Fecha" a datetime si no lo está
+    if not st.session_state["finanzas"].empty:
+        st.session_state["finanzas"]["Fecha"] = pd.to_datetime(st.session_state["finanzas"]["Fecha"], errors="coerce")
+
     # Filtros
     intervalo = st.radio("Selecciona el intervalo:", ["Semanal", "Mensual"])
     fecha_inicio = hoy - datetime.timedelta(days=7) if intervalo == "Semanal" else hoy.replace(day=1)
+    
+    # Filtrar registros dentro del intervalo
     registros_intervalo = st.session_state["finanzas"][
         (st.session_state["finanzas"]["Fecha"] >= pd.to_datetime(fecha_inicio)) &
         (st.session_state["finanzas"]["Fecha"] <= pd.to_datetime(hoy))
