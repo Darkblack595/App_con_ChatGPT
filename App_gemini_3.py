@@ -15,7 +15,7 @@ st.title("Generador de Archivos .xls")
 st.markdown("<h6>Hecha por Juan Pablo Gaviria Orozco</h6>", unsafe_allow_html=True)
 
 # URL del archivo CSV en GitHub
-csv_url = 'https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/regex_productos.csv'
+csv_url = 'https://github.com/gabrielawad/programacion-para-ingenieria/blob/4833a91f25a8154042cfb5e51835f7719f4679be/archivos-datos/regex/regex_productos.csv'
 
 @st.cache
 def cargar_datos(url):
