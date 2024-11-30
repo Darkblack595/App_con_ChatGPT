@@ -30,12 +30,7 @@ def evaluar_contrasena(contrasena):
             sugerencias.append("¡Utiliza un símbolo especial! Los símbolos como !, @, #, $, %, ^, & y * añaden una capa extra de protección.\n")
         return "Tu contraseña podría ser más fuerte. Aquí tienes algunas ideas para mejorarla: " + ", ".join(sugerencias)
 
-# Configuración de la página
-st.beta_set_page_config(
-    page_title="Evaluador de Contraseñas",
-    page_icon="",
-    layout="wide"
-)
+
 
 # Título de la aplicación
 st.title("Evaluador de Contraseñas ")
