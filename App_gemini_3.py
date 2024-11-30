@@ -98,16 +98,8 @@ def convertir_a_excel(data):
 data = cargar_datos(csv_url)
 
 if data is not None:
-    # Mostrar los datos cargados
-    st.write("Datos del archivo CSV:")
-    st.dataframe(data)
-
     # Depurar y clasificar datos
     datos_depurados = depurar_datos(data)
-
-    # Mostrar los datos depurados
-    st.write("Datos depurados:")
-    st.dataframe(datos_depurados)
 
     # Botón para generar archivo .xls
     if st.button("Generar archivo .xls"):
