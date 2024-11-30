@@ -30,10 +30,11 @@ def evaluar_contrasena(contrasena):
             sugerencias.append("¡Utiliza un símbolo especial! Los símbolos como !, @, #, $, %, ^, & y * añaden una capa extra de protección.\n")
         return "Tu contraseña podría ser más fuerte. Aquí tienes algunas ideas para mejorarla: " + ", ".join(sugerencias)
 
-
-
 # Título de la aplicación
-st.title("Evaluador de Contraseñas ")
+st.title("Evaluador de Contraseñas")
+st.markdown("**Hecho por Juan Pablo Gaviria Orozco**")
+
+# Estilos CSS
 st.markdown("""
 <style>
 .stApp {
@@ -55,31 +56,22 @@ st.markdown("""
   margin: 4px 2px;
   cursor: pointer; 1 
 }
-.sugerencias {
+.sugerencia {
   background-color: #f2f2f2;
   padding: 15px;
   border-radius: 5px;
+  margin-bottom: 10px;
+}
+.sugerencia:nth-child(even) {
+  background-color: #e0e0e0;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Explicación de los criterios
-st.markdown("""
-Hecho por Juan Pablo Gaviria Orozco
-""")
+# ... (resto de tu código)
 
-# Campo de entrada para la contraseña
-contrasena = st.text_input("Ingrese su contraseña:")
-
-# Botón para evaluar la contraseña
-if st.button("Evaluar mi contraseña"):
-    resultado = evaluar_contrasena(contrasena)
-    st.success(resultado)
-
-    if "fuerte" not in resultado:  # Si la contraseña no es fuerte, mostrar sugerencias
-        st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
-        for sugerencia in resultado.split(", "):
-            st.markdown(f"- {sugerencia}")  
-
-# Este código te proporciona una aplicación completa para evaluar la fuerza de contraseñas con una interfaz atractiva y personalizable. 
-# Puedes modificar los colores, fuentes y estilos CSS para adaptarlo a tus preferencias.
+# Si la contraseña no es fuerte, mostrar sugerencias en recuadros de colores
+if "fuerte" not in resultado:
+    st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
+    for i, sugerencia in enumerate(resultado.split(", "), start=1):
+        st.markdown(f"<div class='sugerencia'>- {sugerencia}</div>", unsafe_allow_html=True)
