@@ -53,10 +53,10 @@ def depurar_datos(data):
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
         # Descartar nombres de personas para la búsqueda del nombre del producto
-        text = text.replace(contacto_nombre.group(0) if contacto_nombre else "", "")
+        text = text.replace(contacto_nombre.group(0) if contacto_nombre else "", "").strip()
 
         # Nombre del producto (una sola palabra con una letra inicial en mayúscula)
-        nombre_producto = re.search(r"\b[A-Z][a-z]*\b", text)
+        nombre_producto = re.search(r"\b[A-Z][a-zA-Z]*\b", text)
         nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
 
         # Valor del producto (comienza con $, uno o dos dígitos después del punto)
