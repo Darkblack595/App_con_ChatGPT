@@ -30,7 +30,7 @@ def cargar_datos(url):
         st.error(f"Error al cargar los datos: {e}")
         return None
 
-# Función para depurar y clasificar datos
+# Función para depurar y clasificar datos usando regex
 def depurar_datos(data):
     series = []
     nombres_producto = []
@@ -39,37 +39,41 @@ def depurar_datos(data):
     contactos = []
 
     for index, row in data.iterrows():
-        text = ' '.join(row.dropna().astype(str))  # Combinar todas las columnas en una sola cadena de texto
+        fila_texto = row.dropna().astype(str).tolist()  # Convertir la fila en una lista de cadenas de texto
 
         # Número de serie del producto
-        serie = re.search(r"\b\d{6}\b", text)  # Ajusta esta expresión regular
+        serie = next((re.search(r"\b\d{6}\b", entrada) for entrada in fila_texto if re.search(r"\b\d{6}\b", entrada)), None)
         series.append(serie.group(0) if serie else "N/A")
 
-        # Información de contacto (nombre de la persona, correo y número de teléfono)
-        contacto_nombre = re.findall(r"[A-Z][a-z]+\s[A-Z][a-z]+", text)  # Ajusta esta expresión regular
-        for caso in contacto_nombre:
-            if re.search(r"@", caso):
-                contacto_nombre.remove(caso)
-        contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
-        contacto = [contacto_nombre[0] if contacto_nombre[0] else "N/A"]
+        # Buscar valor del producto en la fila
+        valor = next((re.search(r"\$([0-9]+\.[0-9]{1,2})", entrada) for entrada in fila_texto if re.search(r"\$([0-9]+\.[0-9]{1,2})", entrada)), None)
+        valores.append(valor.group(0) if valor else "N/A")
+
+        # Buscar fecha de compra en la fila
+        fecha = next((re.search(r"\b\d{2}/\d{2}/\d{2}\b", entrada) for entrada in fila_texto if re.search(r"\b\d{2}/\d{2}/\d{2}\b", entrada)), None)
+        fechas.append(fecha.group(0) if fecha else "N/A")
+
+        # Buscar nombre de la persona en la fila
+        contacto_nombre = next((re.findall(r"[A-Z][a-z]+\s[A-Z][a-z]+", entrada) for entrada in fila_texto if re.findall(r"[A-Z][a-z]+\s[A-Z][a-z]+", entrada)), None)
+        if contacto_nombre:
+            contacto_nombre = [caso for caso in contacto_nombre if not re.search(r"@", caso)]
+        
+        # Buscar correo electrónico en la fila
+        contacto_email_tel = [re.search(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", entrada).group(0) for entrada in fila_texto if re.search(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", entrada)]
+        
+        contacto = []
+        if contacto_nombre:
+            contacto.append(contacto_nombre[0])
         contacto.extend(contacto_email_tel)
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
         # Descartar nombres de personas para la búsqueda del nombre del producto
         if contacto_nombre:
-            text = text.replace(contacto_nombre[0], "")
+            fila_texto = [entrada.replace(contacto_nombre[0], "") for entrada in fila_texto]
 
-        # Nombre del producto
-        nombre_producto = re.search(r"\b[A-Z][a-z]+\b", text)  # Ajusta esta expresión regular
+        # Buscar nombre del producto en la fila
+        nombre_producto = next((re.search(r"\b[A-Z][a-z]+\b", entrada) for entrada in fila_texto if re.search(r"\b[A-Z][a-z]+\b", entrada)), None)
         nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
-
-        # Valor del producto (comienza con $, uno o dos dígitos después del punto)
-        valor = re.search(r"\$([0-9]+\.[0-9]{1,2})", text)
-        valores.append(valor.group(0) if valor else "N/A")
-
-        # Fecha de compra del producto (contiene /)
-        fecha = re.search(r"\b\d{2}/\d{2}/\d{2}\b", text)
-        fechas.append(fecha.group(0) if fecha else "N/A")
 
     depurado_data = pd.DataFrame({
         "Número de Serie": series,
