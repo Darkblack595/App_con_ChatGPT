@@ -1,105 +1,88 @@
 import streamlit as st
+import re
+import requests
 import pandas as pd
-import os
-import io
-
-# Intentar importar xlsxwriter y manejar el error si no está instalado
-try:
-    import xlsxwriter
-except ImportError:
-    import os
-    os.system('pip install xlsxwriter')
-    import xlsxwriter
 
 # Título de la app
-st.title("Premier League Stats Analyzer")
+st.title("Recipe Finder")
 st.markdown("<h6>Hecha por Juan Pablo Gaviria Orozco</h6>", unsafe_allow_html=True)
 
-# Carpeta de datos
-data_folder = 'https://github.com/Darkblack595/App_con_ChatGPT/tree/7f2d53bbddcf0920e9cf1eec921355e333d7a083/Premier_Data'
+# URL de la API con datos de recetas
+api_url = 'https://dummyjson.com/recipes'
 
-# Función para cargar datos
-def cargar_datos():
-    all_data = []
-    for season_file in os.listdir(data_folder):
-        if season_file.endswith('leaguetable.csv'):
-            season_data = pd.read_csv(os.path.join(data_folder, season_file))
-            season_data['Season'] = season_file.split('epl')[1].split('leaguetable')[0]
-            all_data.append(season_data)
-    return pd.concat(all_data)
+@st.cache_data
+def cargar_datos(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        json_data = response.json()
+        return json_data['recipes']
+    except Exception as e:
+        st.error(f"Error al cargar los datos: {e}")
+        return None
 
-# Función para depurar y clasificar datos
-def depurar_datos(data):
-    equipos_campeones = data[data['position'] == 1]
-    equipos_subcampeones = data[data['position'] == 2]
+# Función para buscar recetas por ingredientes
+def buscar_por_ingredientes(recetas, ingredientes):
+    resultados = []
+    for receta in recetas:
+        if all(ing.lower() in receta['ingredients'].lower() for ing in ingredientes):
+            resultados.append(receta)
+    return resultados
 
-    return equipos_campeones, equipos_subcampeones
+# Función para buscar recetas por tiempo de preparación
+def buscar_por_tiempo(recetas, tiempo):
+    resultados = []
+    for receta in recetas:
+        if 'prepTime' in receta and int(receta['prepTime']) <= tiempo:
+            resultados.append(receta)
+    return resultados
 
-# Función para análisis de estadísticas
-def estadisticas_generales(data):
-    total_goles_anotados = data['goalsscored'].sum()
-    total_goles_concedidos = data['goalsconceded'].sum()
-    equipos_mas_goleadores = data.groupby('club')['goalsscored'].sum().nlargest(5).reset_index()
-    equipos_mas_goleados = data.groupby('club')['goalsconceded'].sum().nlargest(5).reset_index()
+# Función para buscar recetas por tipo de plato
+def buscar_por_tipo(recetas, tipo):
+    resultados = [receta for receta in recetas if tipo.lower() in receta['type'].lower()]
+    return resultados
 
-    return total_goles_anotados, total_goles_concedidos, equipos_mas_goleadores, equipos_mas_goleados
+# Cargar datos de la API
+recetas = cargar_datos(api_url)
 
-# Convertir a Excel
-def convertir_a_excel(data, sheet_name):
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        for df, name in zip(data, sheet_name):
-            df.to_excel(writer, index=False, sheet_name=name)
-            
-            worksheet = writer.sheets[name]
-            for i, col in enumerate(df.columns):
-                max_len = df[col].astype(str).map(len).max()
-                worksheet.set_column(i, i, max_len + 2)
-    return output.getvalue()
+if recetas:
+    st.write("Datos cargados con éxito!")
 
-# Cargar datos del CSV
-data = cargar_datos()
+    # Búsqueda por ingredientes
+    ingredientes_input = st.text_input("Ingresa los ingredientes separados por comas (ejemplo: tomate, ajo, pollo)")
+    if ingredientes_input:
+        ingredientes = [ing.strip() for ing in ingredientes_input.split(',')]
+        recetas_por_ingredientes = buscar_por_ingredientes(recetas, ingredientes)
+        st.write(f"Recetas encontradas con los ingredientes {', '.join(ingredientes)}:")
+        for receta in recetas_por_ingredientes:
+            st.write(f"**{receta['title']}**")
+            st.write(f"**Ingredientes**: {receta['ingredients']}")
+            st.write(f"**Tiempo de preparación**: {receta.get('prepTime', 'N/A')} min")
+            st.write(f"**Tipo**: {receta.get('type', 'N/A')}")
+            st.write(f"**Instrucciones**: {receta['instructions']}")
 
-if data is not None:
-    # Mostrar los datos cargados
-    st.write("Datos de la Premier League:")
-    st.dataframe(data)
+    # Búsqueda por tiempo de preparación
+    tiempo_input = st.number_input("Ingresa el tiempo máximo de preparación en minutos", min_value=1)
+    if tiempo_input > 0:
+        recetas_por_tiempo = buscar_por_tiempo(recetas, tiempo_input)
+        st.write(f"Recetas encontradas con un tiempo de preparación de {tiempo_input} minutos o menos:")
+        for receta in recetas_por_tiempo:
+            st.write(f"**{receta['title']}**")
+            st.write(f"**Ingredientes**: {receta['ingredients']}")
+            st.write(f"**Tiempo de preparación**: {receta.get('prepTime', 'N/A')} min")
+            st.write(f"**Tipo**: {receta.get('type', 'N/A')}")
+            st.write(f"**Instrucciones**: {receta['instructions']}")
 
-    # Depurar y clasificar datos
-    equipos_campeones, equipos_subcampeones = depurar_datos(data)
-    
-    # Análisis de estadísticas generales
-    total_goles_anotados, total_goles_concedidos, equipos_mas_goleadores, equipos_mas_goleados = estadisticas_generales(data)
-
-    # Mostrar resultados
-    st.write("Equipos Campeones por Temporada:")
-    st.dataframe(equipos_campeones)
-
-    st.write("Equipos Subcampeones por Temporada:")
-    st.dataframe(equipos_subcampeones)
-    
-    st.write("Estadísticas Generales:")
-    st.write(f"Total de Goles Anotados: {total_goles_anotados}")
-    st.write(f"Total de Goles Concedidos: {total_goles_concedidos}")
-    
-    st.write("Equipos Más Goleadores:")
-    st.dataframe(equipos_mas_goleadores)
-
-    st.write("Equipos Más Goleados:")
-    st.dataframe(equipos_mas_goleados)
-
-    # Botón para generar archivo .xls
-    if st.button("Generar archivo .xls"):
-        excel_data = convertir_a_excel(
-            [equipos_campeones, equipos_subcampeones, equipos_mas_goleadores, equipos_mas_goleados],
-            ["Equipos Campeones", "Equipos Subcampeones", "Equipos Más Goleadores", "Equipos Más Goleados"]
-        )
-        if excel_data:
-            st.download_button(
-                label="Descargar archivo .xls",
-                data=excel_data,
-                file_name='premier_league_stats.xlsx',
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )
+    # Búsqueda por tipo de plato
+    tipo_input = st.text_input("Ingresa el tipo de plato (ejemplo: entrada, plato principal, postre)")
+    if tipo_input:
+        recetas_por_tipo = buscar_por_tipo(recetas, tipo_input)
+        st.write(f"Recetas encontradas del tipo {tipo_input}:")
+        for receta in recetas_por_tipo:
+            st.write(f"**{receta['title']}**")
+            st.write(f"**Ingredientes**: {receta['ingredients']}")
+            st.write(f"**Tiempo de preparación**: {receta.get('prepTime', 'N/A')} min")
+            st.write(f"**Tipo**: {receta.get('type', 'N/A')}")
+            st.write(f"**Instrucciones**: {receta['instructions']}")
 else:
-    st.error("No se pudo cargar los datos. Por favor, verifica la URL o el formato de los archivos.")
+    st.error("No se pudo cargar los datos. Por favor, verifica la URL o el formato de los datos.")
