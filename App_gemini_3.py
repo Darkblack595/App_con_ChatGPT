@@ -46,7 +46,7 @@ def depurar_datos(data):
         series.append(serie.group(0) if serie else "N/A")
 
         # Información de contacto (nombre de la persona, correo y número de teléfono)
-        contacto_nombre = re.search(r"[A-Z][a-z]+ [A-Z][a-z]+|[A-Z][a-z]+[A-Z][a-z]+", text)
+        contacto_nombre = re.search(r"^[A-Z][a-z]+\s?[A-Z][a-z]+$", text)
         contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
         contacto = [contacto_nombre.group(0) if contacto_nombre else "N/A"]
         contacto.extend(contacto_email_tel)
@@ -55,13 +55,9 @@ def depurar_datos(data):
         # Descartar nombres de personas para la búsqueda del nombre del producto
         text = text.replace(contacto_nombre.group(0) if contacto_nombre else "", "")
 
-        # Nombre del producto (letras sin números ni espacios)
-        nombre_producto = None
-        for match in re.findall(r"\b[A-Za-z]+\b", text):
-            if not re.search(r"[A-Z].*[A-Z]", match):
-                nombre_producto = match
-                break
-        nombres_producto.append(nombre_producto if nombre_producto else "N/A")
+        # Nombre del producto (una sola palabra con una letra inicial en mayúscula)
+        nombre_producto = re.search(r"^[A-Z][a-z]+$", text)
+        nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
 
         # Valor del producto (comienza con $, uno o dos dígitos después del punto)
         valor = re.search(r"\$([0-9]+\.[0-9]{1,2})", text)
