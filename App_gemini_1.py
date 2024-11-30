@@ -70,8 +70,16 @@ st.markdown("""
 
 # ... (resto de tu código)
 
-# Si la contraseña no es fuerte, mostrar sugerencias en recuadros de colores
-if "fuerte" not in resultado:
-    st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
-    for i, sugerencia in enumerate(resultado.split(", "), start=1):
-        st.markdown(f"<div class='sugerencia'>- {sugerencia}</div>", unsafe_allow_html=True)
+contrasena = st.text_input("Ingrese su contraseña:")
+
+resultado = ""  # Inicializamos resultado con una cadena vacía
+
+# Botón para evaluar la contraseña
+if st.button("Evaluar mi contraseña"):
+    resultado = evaluar_contrasena(contrasena)
+    st.success(resultado)
+
+    if "fuerte" not in resultado:  # Si la contraseña no es fuerte, mostrar sugerencias
+        st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
+        for i, sugerencia in enumerate(resultado.split(", "), start=1):
+            st.markdown(f"<div class='sugerencia'>- {sugerencia}</div>", unsafe_allow_html=True)
