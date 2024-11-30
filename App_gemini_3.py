@@ -48,7 +48,7 @@ def depurar_datos(data):
         # Información de contacto (nombre de la persona, correo y número de teléfono)
         contacto_nombre = re.findall(r"[A-Z][a-z]+\s?[A-Z][a-z]+", text)  # Ajusta esta expresión regular
         for caso in contacto_nombre:
-            if search(r"@", caso):
+            if re.search(r"@", caso):
                 contacto_nombre.remove(caso)
         contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
         contacto = [contacto_nombre[0].group(0) if contacto_nombre[0] else "N/A"]
