@@ -45,10 +45,20 @@ def depurar_datos(data):
         serie = re.search(r"\b\d{6}\b", text)
         series.append(serie.group(0) if serie else "N/A")
 
-        # Nombre del producto (letras sin números ni espacios, asegurando que no es un nombre de persona)
+        # Información de contacto (nombre de la persona, correo y número de teléfono)
+        contacto_nombre = re.search(r"[A-Z][a-z]+ [A-Z][a-z]+|[A-Z][a-z]+[A-Z][a-z]+", text)
+        contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
+        contacto = [contacto_nombre.group(0) if contacto_nombre else "N/A"]
+        contacto.extend(contacto_email_tel)
+        contactos.append(', '.join(contacto) if contacto else "N/A")
+
+        # Descartar nombres de personas para la búsqueda del nombre del producto
+        text = text.replace(contacto_nombre.group(0) if contacto_nombre else "", "")
+
+        # Nombre del producto (letras sin números ni espacios)
         nombre_producto = None
         for match in re.findall(r"\b[A-Za-z]+\b", text):
-            if re.match(r"[A-Z][a-z]+$", match) and not re.match(r"[A-Z][a-z]+[A-Z][a-z]+$", match):
+            if not re.search(r"[A-Z].*[A-Z]", match):
                 nombre_producto = match
                 break
         nombres_producto.append(nombre_producto if nombre_producto else "N/A")
@@ -60,13 +70,6 @@ def depurar_datos(data):
         # Fecha de compra del producto (contiene /)
         fecha = re.search(r"\b\d{2}/\d{2}/\d{2}\b", text)
         fechas.append(fecha.group(0) if fecha else "N/A")
-
-        # Información de contacto (nombre de la persona, correo y número de teléfono)
-        contacto_nombre = re.search(r"[A-Z][a-z]+ [A-Z][a-z]+|[A-Z][a-z]+[A-Z][a-z]+", text)
-        contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
-        contacto = [contacto_nombre.group(0) if contacto_nombre else "N/A"]
-        contacto.extend(contacto_email_tel)
-        contactos.append(', '.join(contacto) if contacto else "N/A")
 
     depurado_data = pd.DataFrame({
         "Número de Serie": series,
