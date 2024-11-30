@@ -3,14 +3,19 @@ import pandas as pd
 import requests
 import io
 from datetime import datetime
-import xlsxwriter
+
+# Intentar importar xlsxwriter y manejar el error si no está instalado
+try:
+    import xlsxwriter
+except ImportError:
+    st.error("El módulo xlsxwriter no está instalado. Por favor, instálalo ejecutando `pip install xlsxwriter`.")
 
 # Título de la app
 st.title("Generador de Archivos .xls")
 st.markdown("<h6>Hecha por Juan Pablo Gaviria Orozco</h6>", unsafe_allow_html=True)
 
 # URL del archivo CSV en GitHub
-csv_url = 'https://github.com/gabrielawad/programacion-para-ingenieria/blob/4833a91f25a8154042cfb5e51835f7719f4679be/archivos-datos/regex/regex_productos.csv'
+csv_url = 'https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/regex_productos.csv'
 
 @st.cache
 def cargar_datos(url):
@@ -46,7 +51,7 @@ def convertir_a_excel(data):
     return processed_data
 
 # Botón para generar archivo .xls
-if st.button("Generar archivo .xls"):
+if st.button("Generar archivo .xls") and 'xlsxwriter' in globals():
     excel_data = convertir_a_excel(data)
     st.download_button(
         label="Descargar archivo .xls",
