@@ -45,10 +45,10 @@ def depurar_datos(data):
         serie = re.search(r"\b\d{6}\b", text)
         series.append(serie.group(0) if serie else "N/A")
 
-        # Nombre del producto (letras sin espacios ni números)
+        # Nombre del producto (letras sin números ni espacios, asegurando que no es un nombre de persona)
         nombre_producto = None
         for match in re.findall(r"\b[A-Za-z]+\b", text):
-            if not re.search(r"[A-Z][a-z]+ [A-Z][a-z]+", match) and not re.search(r"[A-Z].*[A-Z]", match):
+            if re.match(r"[A-Z][a-z]+$", match) and not re.match(r"[A-Z][a-z]+[A-Z][a-z]+$", match):
                 nombre_producto = match
                 break
         nombres_producto.append(nombre_producto if nombre_producto else "N/A")
