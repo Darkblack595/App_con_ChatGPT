@@ -74,3 +74,5 @@ if data is not None:
             # Vista previa del archivo generado
             st.write("Vista previa del archivo generado:")
             st.dataframe(data)
+else:
+    st.error("No se pudo cargar el archivo CSV. Por favor, verifica la URL o el formato del archivo.")
