@@ -45,9 +45,13 @@ def depurar_datos(data):
         serie = re.search(r"\b\d{6}\b", text)
         series.append(serie.group(0) if serie else "N/A")
 
-        # Nombre del producto (sin números ni espacios)
-        nombre_producto = re.search(r"\b[A-Za-z]+(?=\b|,|:|$)", text)
-        nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
+        # Nombre del producto (letras sin espacios ni números)
+        nombre_producto = None
+        for match in re.findall(r"\b[A-Za-z]+\b", text):
+            if not re.search(r"[A-Z][a-z]+ [A-Z][a-z]+", match) and not re.search(r"[A-Z].*[A-Z]", match):
+                nombre_producto = match
+                break
+        nombres_producto.append(nombre_producto if nombre_producto else "N/A")
 
         # Valor del producto (comienza con $, uno o dos dígitos después del punto)
         valor = re.search(r"\$([0-9]+\.[0-9]{1,2})", text)
@@ -58,9 +62,9 @@ def depurar_datos(data):
         fechas.append(fecha.group(0) if fecha else "N/A")
 
         # Información de contacto (nombre de la persona, correo y número de teléfono)
+        contacto_nombre = re.search(r"[A-Z][a-z]+ [A-Z][a-z]+|[A-Z][a-z]+[A-Z][a-z]+", text)
         contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
-        nombre_persona = re.search(r"[A-Za-z]+ [A-Za-z]+", text)
-        contacto = [nombre_persona.group(0) if nombre_persona else "N/A"]
+        contacto = [contacto_nombre.group(0) if contacto_nombre else "N/A"]
         contacto.extend(contacto_email_tel)
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
