@@ -19,30 +19,58 @@ def evaluar_contrasena(contrasena):
     else:
         sugerencias = []
         if not longitud:
-            sugerencias.append("¡Añade más letras y números! Las contraseñas fuertes son como rompecabezas largos.")
+            sugerencias.append("¡Añade más letras y números! Las contraseñas fuertes son como rompecabezas largos.\n")
         if not mayusculas:
-            sugerencias.append("Incluye una letra mayúscula. ¡Las mayúsculas le dan un toque extra de seguridad!")
+            sugerencias.append("Incluye una letra mayúscula. ¡Las mayúsculas le dan un toque extra de seguridad!\n")
         if not minusculas:
-            sugerencias.append("¡Agrega una letra minúscula! Varía las letras para hacerla más difícil de adivinar.")
+            sugerencias.append("¡Agrega una letra minúscula! Varía las letras para hacerla más difícil de adivinar.\n")
         if not numeros:
-            sugerencias.append("¡Incorpora un número! Los números hacen que tu contraseña sea más resistente a ataques.")
+            sugerencias.append("¡Incorpora un número! Los números hacen que tu contraseña sea más resistente a ataques.\n")
         if not especiales:
-            sugerencias.append("¡Utiliza un símbolo especial! Los símbolos como !, @, #, $, %, ^, & y * añaden una capa extra de protección.")
+            sugerencias.append("¡Utiliza un símbolo especial! Los símbolos como !, @, #, $, %, ^, & y * añaden una capa extra de protección.\n")
         return "Tu contraseña podría ser más fuerte. Aquí tienes algunas ideas para mejorarla: " + ", ".join(sugerencias)
+
+# Configuración de la página
+st.beta_set_page_config(
+    page_title="Evaluador de Contraseñas",
+    page_icon="",
+    layout="wide"
+)
 
 # Título de la aplicación
 st.title("Evaluador de Contraseñas ")
-st.markdown("**Hecho por Juan Pablo Gaviria Orozco**")
+st.markdown("""
+<style>
+.stApp {
+  font-family: 'sans-serif';
+}
+.stTitle {
+  font-size: 36px;
+  text-align: center;
+  color: #336699;
+}
+.stButton > button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer; 1 
+}
+.sugerencias {
+  background-color: #f2f2f2;
+  padding: 15px;
+  border-radius: 5px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Explicación de los criterios
-st.write("""
-Una contraseña fuerte es como una caja fuerte: ¡cuanto más compleja, más difícil de abrir! 
-Para que tu contraseña sea realmente segura, te recomendamos que cumpla los siguientes criterios:
-
-* **Al menos 8 caracteres:** Cuanto más larga, mejor.
-* **Mayúsculas y minúsculas:** Combina letras grandes y pequeñas para hacerla más variada.
-* **Números:** Los números añaden una capa extra de seguridad.
-* **Caracteres especiales:** Símbolos como !, @, #, $, %, ^, & y * hacen tu contraseña más difícil de adivinar.
+st.markdown("""
+Hecho por Juan Pablo Gaviria Orozco
 """)
 
 # Campo de entrada para la contraseña
@@ -52,3 +80,11 @@ contrasena = st.text_input("Ingrese su contraseña:")
 if st.button("Evaluar mi contraseña"):
     resultado = evaluar_contrasena(contrasena)
     st.success(resultado)
+
+    if "fuerte" not in resultado:  # Si la contraseña no es fuerte, mostrar sugerencias
+        st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
+        for sugerencia in resultado.split(", "):
+            st.markdown(f"- {sugerencia}")  
+
+# Este código te proporciona una aplicación completa para evaluar la fuerza de contraseñas con una interfaz atractiva y personalizable. 
+# Puedes modificar los colores, fuentes y estilos CSS para adaptarlo a tus preferencias.
