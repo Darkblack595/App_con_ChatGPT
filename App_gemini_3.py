@@ -51,7 +51,7 @@ def depurar_datos(data):
             if re.search(r"@", caso):
                 contacto_nombre.remove(caso)
         contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
-        contacto = [contacto_nombre[0].group(0) if contacto_nombre[0] else "N/A"]
+        contacto = [contacto_nombre[0] if contacto_nombre[0] else "N/A"]
         contacto.extend(contacto_email_tel)
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
