@@ -7,12 +7,12 @@ st.markdown("<h6>Hecha por Juan Pablo Gaviria Orozco</h6>", unsafe_allow_html=Tr
 
 # Función para validar Cédula de Ciudadanía (Colombia)
 def validar_cedula_colombia(cedula):
-    patron = re.compile(r'^\d{6,10}$')
+    patron = re.compile(r'^\d{10}$')
     return patron.match(cedula) is not None
 
 # Función para validar CURP (México)
 def validar_curp_mexico(curp):
-    patron = re.compile(r'^[A-Z]{4}\d{6}[A-Z]{6}\d{2}$')
+    patron = re.compile(r'^[A-Z]{4}[0-9]{6}[HM][A-Z0-9]{2}$')
     return patron.match(curp) is not None
 
 # Función para validar Número de Seguro Social (SSN) (Estados Unidos)
