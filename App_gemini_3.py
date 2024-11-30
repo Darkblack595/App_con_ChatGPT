@@ -19,7 +19,7 @@ st.markdown("<h6>Hecha por Juan Pablo Gaviria Orozco</h6>", unsafe_allow_html=Tr
 # URL del archivo CSV en GitHub
 csv_url = 'https://raw.githubusercontent.com/gabrielawad/programacion-para-ingenieria/4833a91f25a8154042cfb5e51835f7719f4679be/archivos-datos/regex/regex_productos.csv'
 
-@st.cache
+@st.cache_data
 def cargar_datos(url):
     try:
         download = requests.get(url).content
@@ -54,7 +54,6 @@ if data is not None:
                 worksheet.set_column('D:D', 20)
                 worksheet.set_column('E:E', 40)
 
-                writer.save()
             processed_data = output.getvalue()
             return processed_data
         except Exception as e:
@@ -74,6 +73,4 @@ if data is not None:
 
             # Vista previa del archivo generado
             st.write("Vista previa del archivo generado:")
-            st.dataframe(data)
-else:
-    st.error("No se pudo cargar el archivo CSV. Por favor, verifica la URL o el formato del archivo.")
+            st.dataframe(data
