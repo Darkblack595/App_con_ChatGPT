@@ -30,7 +30,7 @@ def cargar_datos(url):
         st.error(f"Error al cargar los datos: {e}")
         return None
 
-# Función para depurar y clasificar datos usando regex
+# Función para depurar y clasificar datos
 def depurar_datos(data):
     series = []
     nombres_producto = []
@@ -41,22 +41,26 @@ def depurar_datos(data):
     for index, row in data.iterrows():
         text = ' '.join(row.dropna().astype(str))  # Combinar todas las columnas en una sola cadena de texto
 
-        # Número de serie del producto (números de 6 dígitos)
-        serie = re.search(r"\b\d{6}\b", text)
+        # Número de serie del producto
+        serie = re.search(r"\b\d{6}\b", text)  # Ajusta esta expresión regular
         series.append(serie.group(0) if serie else "N/A")
 
         # Información de contacto (nombre de la persona, correo y número de teléfono)
-        contacto_nombre = re.search(r"([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)", text)
+        contacto_nombre = re.search(r"[A-Z][a-z]+\s?[A-Z][a-z]+", text)  # Ajusta esta expresión regular
+        for caso in contacto_nombre:
+            if search(r"@", caso):
+                contacto_nombre.remove(caso)
         contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
         contacto = [contacto_nombre.group(0) if contacto_nombre else "N/A"]
         contacto.extend(contacto_email_tel)
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
         # Descartar nombres de personas para la búsqueda del nombre del producto
-        text = text.replace(contacto_nombre.group(0) if contacto_nombre else "", "").strip()
+        if contacto_nombre:
+            text = text.replace(contacto_nombre.group(0), "")
 
-        # Nombre del producto (una sola palabra con una letra inicial en mayúscula)
-        nombre_producto = re.search(r"\b[A-Z][a-zA-Z]*\b", text)
+        # Nombre del producto
+        nombre_producto = re.search(r"\b[A-Z][a-z]+\b", text)  # Ajusta esta expresión regular
         nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
 
         # Valor del producto (comienza con $, uno o dos dígitos después del punto)
@@ -88,11 +92,11 @@ def convertir_a_excel(data):
             worksheet = writer.sheets['Sheet1']
 
             # Formateo de columnas
-            worksheet.set_column('A:A', 20)  # Número de Serie
-            worksheet.set_column('B:B', 30)  # Nombre del Producto
-            worksheet.set_column('C:C', 15)  # Valor
-            worksheet.set_column('D:D', 20)  # Fecha de Compra
-            worksheet.set_column('E:E', 40)  # Contacto
+            worksheet.set_column('A:A', 20)
+            worksheet.set_column('B:B', 30)
+            worksheet.set_column('C:C', 15)
+            worksheet.set_column('D:D', 20)
+            worksheet.set_column('E:E', 40)
 
         processed_data = output.getvalue()
         return processed_data
