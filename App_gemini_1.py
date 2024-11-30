@@ -57,37 +57,29 @@ st.markdown("""
   cursor: pointer; 1 
 }
 .sugerencia {
-  background-color: #f2f2f2;
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 10px;
 }
+.sugerencia-1 {
+  background-color: #f2f2f2;
+}
+.sugerencia-2 {
+  background-color: #e0e0e0;
+}
+.sugerencia-3 {
+  background-color: #d4d4d4;
+}
+.sugerencia-4 {
+  background-color: #b3b3b3;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# JavaScript para asignar colores aleatorios a las sugerencias
-st.markdown("""
-<script>
-  const sugerencias = document.querySelectorAll('.sugerencia');
-  const colores = ['#f2f2f2', '#e0e0e0', '#d4d4d4', '#b3b3b3']; // Puedes agregar más colores
+# ... (resto de tu código)
 
-  sugerencias.forEach((sugerencia, index) => {
-    sugerencia.style.backgroundColor = colores[index % colores.length];
-  });
-</script>
-""", unsafe_allow_html=True)
-
-# Campo de entrada para la contraseña
-contrasena = st.text_input("Ingrese su contraseña:")
-
-resultado = ""
-
-# Botón para evaluar la contraseña
-if st.button("Evaluar mi contraseña"):
-    resultado = evaluar_contrasena(contrasena)
-    st.success(resultado)
-
-    if "fuerte" not in resultado:  # Si la contraseña no es fuerte, mostrar sugerencias
-        st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
-        for sugerencia in resultado.split(", "):
-            st.markdown(f"<div class='sugerencia'>{sugerencia}</div>", unsafe_allow_html=True)
+# Si la contraseña no es fuerte, mostrar sugerencias en recuadros de colores
+if "fuerte" not in resultado:
+    st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
+    for i, sugerencia in enumerate(resultado.split(", "), start=1):
+        st.markdown(f"<div class='sugerencia sugerencia-{i}'>{sugerencia}</div>", unsafe_allow_html=True)
