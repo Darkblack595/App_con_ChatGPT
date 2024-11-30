@@ -62,17 +62,25 @@ st.markdown("""
   border-radius: 5px;
   margin-bottom: 10px;
 }
-.sugerencia:nth-child(even) {
-  background-color: #e0e0e0;
-}
 </style>
 """, unsafe_allow_html=True)
 
-# ... (resto de tu código)
+# JavaScript para asignar colores aleatorios a las sugerencias
+st.markdown("""
+<script>
+  const sugerencias = document.querySelectorAll('.sugerencia');
+  const colores = ['#f2f2f2', '#e0e0e0', '#d4d4d4', '#b3b3b3']; // Puedes agregar más colores
 
+  sugerencias.forEach((sugerencia, index) => {
+    sugerencia.style.backgroundColor = colores[index % colores.length];
+  });
+</script>
+""", unsafe_allow_html=True)
+
+# Campo de entrada para la contraseña
 contrasena = st.text_input("Ingrese su contraseña:")
 
-resultado = ""  # Inicializamos resultado con una cadena vacía
+resultado = ""
 
 # Botón para evaluar la contraseña
 if st.button("Evaluar mi contraseña"):
@@ -81,5 +89,5 @@ if st.button("Evaluar mi contraseña"):
 
     if "fuerte" not in resultado:  # Si la contraseña no es fuerte, mostrar sugerencias
         st.markdown("<div class='sugerencias'>**Aquí hay algunas sugerencias para fortalecer tu contraseña:**</div>", unsafe_allow_html=True)
-        for i, sugerencia in enumerate(resultado.split(", "), start=1):
-            st.markdown(f"<div class='sugerencia'>- {sugerencia}</div>", unsafe_allow_html=True)
+        for sugerencia in resultado.split(", "):
+            st.markdown(f"<div class='sugerencia'>{sugerencia}</div>", unsafe_allow_html=True)
