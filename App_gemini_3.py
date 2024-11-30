@@ -37,7 +37,6 @@ def depurar_datos(data):
     valores = []
     fechas = []
     contactos = []
-    nombres_persona = []
 
     for index, row in data.iterrows():
         text = ' '.join(row.dropna().astype(str))  # Combinar todas las columnas en una sola cadena de texto
@@ -46,9 +45,9 @@ def depurar_datos(data):
         serie = re.search(r"\b\d{6}\b", text)
         series.append(serie.group(0) if serie else "N/A")
 
-        # Nombre del producto
-        nombre_producto = re.search(r"Nombre: ([A-Za-z\s]+)", text)
-        nombres_producto.append(nombre_producto.group(1) if nombre_producto else "N/A")
+        # Nombre del producto (corto y sin espacios)
+        nombre_producto = re.search(r"\b[A-Za-z0-9]{1,10}\b", text)
+        nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
 
         # Valor del producto (comienza con $)
         valor = re.search(r"\$([0-9]+\.[0-9]{2})", text)
@@ -58,25 +57,19 @@ def depurar_datos(data):
         fecha = re.search(r"\b\d{2}/\d{2}/\d{2}\b", text)
         fechas.append(fecha.group(0) if fecha else "N/A")
 
-        # Información de contacto (correo y/o teléfono)
-        contacto = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
+        # Información de contacto (correo, teléfono y nombre)
+        contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
+        nombre_persona = re.search(r"\b[A-Za-z\s]+\b", text)
+        contacto = [nombre_persona.group(0) if nombre_persona else "N/A"]
+        contacto.extend(contacto_email_tel)
         contactos.append(', '.join(contacto) if contacto else "N/A")
-
-        # Nombre de la persona (parte antes del arroba del correo)
-        nombre_persona = None
-        for match in contacto:
-            if '@' in match:
-                nombre_persona = re.search(r"([^@]+)", match).group(1).replace('.', ' ').replace('_', ' ')
-                break
-        nombres_persona.append(nombre_persona if nombre_persona else "N/A")
 
     depurado_data = pd.DataFrame({
         "Número de Serie": series,
         "Nombre del Producto": nombres_producto,
         "Valor": valores,
         "Fecha de Compra": fechas,
-        "Contacto": contactos,
-        "Nombre de Persona": nombres_persona
+        "Contacto": contactos
     })
 
     return depurado_data
@@ -97,7 +90,6 @@ def convertir_a_excel(data):
             worksheet.set_column('C:C', 15)
             worksheet.set_column('D:D', 20)
             worksheet.set_column('E:E', 40)
-            worksheet.set_column('F:F', 30)
 
         processed_data = output.getvalue()
         return processed_data
