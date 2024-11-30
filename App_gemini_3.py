@@ -33,7 +33,7 @@ def cargar_datos(url):
 # Función para depurar y clasificar datos usando regex
 def depurar_datos(data):
     series = []
-    nombres = []
+    nombres_producto = []
     valores = []
     fechas = []
     contactos = []
@@ -45,25 +45,28 @@ def depurar_datos(data):
         serie = re.search(r"\b\d{6}\b", text)
         series.append(serie.group(0) if serie else "N/A")
 
-        # Nombre del producto
-        nombre = re.search(r"Nombre: ([A-Za-z\s]+)", text)
-        nombres.append(nombre.group(1) if nombre else "N/A")
+        # Nombre del producto (sin números ni espacios)
+        nombre_producto = re.search(r"\b[A-Za-z]+(?=\b|,|:|$)", text)
+        nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
 
-        # Valor del producto (comienza con $)
-        valor = re.search(r"\$([0-9]+\.[0-9]{2})", text)
+        # Valor del producto (comienza con $, uno o dos dígitos después del punto)
+        valor = re.search(r"\$([0-9]+\.[0-9]{1,2})", text)
         valores.append(valor.group(0) if valor else "N/A")
 
         # Fecha de compra del producto (contiene /)
         fecha = re.search(r"\b\d{2}/\d{2}/\d{2}\b", text)
         fechas.append(fecha.group(0) if fecha else "N/A")
 
-        # Información de contacto (correo y/o teléfono)
-        contacto = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
+        # Información de contacto (nombre de la persona, correo y número de teléfono)
+        contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
+        nombre_persona = re.search(r"[A-Za-z]+ [A-Za-z]+", text)
+        contacto = [nombre_persona.group(0) if nombre_persona else "N/A"]
+        contacto.extend(contacto_email_tel)
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
     depurado_data = pd.DataFrame({
         "Número de Serie": series,
-        "Nombre del Producto": nombres,
+        "Nombre del Producto": nombres_producto,
         "Valor": valores,
         "Fecha de Compra": fechas,
         "Contacto": contactos
