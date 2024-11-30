@@ -24,7 +24,7 @@ csv_url = 'https://raw.githubusercontent.com/gabrielawad/programacion-para-ingen
 def cargar_datos(url):
     try:
         download = requests.get(url).content
-        data = pd.read_csv(io.StringIO(download.decode('utf-8')))
+        data = pd.read_csv(io.StringIO(download.decode('utf-8')), header=None)
         return data
     except Exception as e:
         st.error(f"Error al cargar los datos: {e}")
@@ -42,23 +42,23 @@ def depurar_datos(data):
         text = row[0]  # Asumimos que los datos están en la primera columna
 
         # Número de serie del producto
-        serie = re.search(r"Serie: (\w+)", text)
+        serie = re.search(r"Serie:\s*([A-Za-z0-9]+)", text)
         series.append(serie.group(1) if serie else "")
 
         # Nombre del producto
-        nombre = re.search(r"Nombre: ([\w\s]+)", text)
+        nombre = re.search(r"Nombre:\s*([A-Za-z\s]+)", text)
         nombres.append(nombre.group(1) if nombre else "")
 
         # Valor del producto
-        valor = re.search(r"Valor: (\d+\.\d{2})", text)
+        valor = re.search(r"Valor:\s*([0-9]+\.[0-9]{2})", text)
         valores.append(valor.group(1) if valor else "")
 
         # Fecha de compra del producto
-        fecha = re.search(r"Fecha: (\d{2}/\d{2}/\d{2})", text)
+        fecha = re.search(r"Fecha:\s*([0-9]{2}/[0-9]{2}/[0-9]{2})", text)
         fechas.append(fecha.group(1) if fecha else "")
 
         # Información de contacto
-        contacto = re.search(r"Contacto: ([\w\s@\.]+)", text)
+        contacto = re.search(r"Contacto:\s*([A-Za-z0-9@\.]+)", text)
         contactos.append(contacto.group(1) if contacto else "")
 
     depurado_data = pd.DataFrame({
