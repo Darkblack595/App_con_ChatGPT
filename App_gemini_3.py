@@ -40,26 +40,32 @@ def depurar_datos(data):
 
     for index, row in data.iterrows():
         text = row[0]  # Asumimos que los datos están en la primera columna
+        st.write(f"Procesando fila {index}: {text}")
 
         # Número de serie del producto
         serie = re.search(r"Serie:\s*([A-Za-z0-9]+)", text)
         series.append(serie.group(1) if serie else "")
+        st.write(f"Número de serie: {serie.group(1) if serie else ''}")
 
         # Nombre del producto
         nombre = re.search(r"Nombre:\s*([A-Za-z\s]+)", text)
         nombres.append(nombre.group(1) if nombre else "")
+        st.write(f"Nombre del producto: {nombre.group(1) if nombre else ''}")
 
         # Valor del producto
         valor = re.search(r"Valor:\s*([0-9]+\.[0-9]{2})", text)
         valores.append(valor.group(1) if valor else "")
+        st.write(f"Valor: {valor.group(1) if valor else ''}")
 
         # Fecha de compra del producto
         fecha = re.search(r"Fecha:\s*([0-9]{2}/[0-9]{2}/[0-9]{2})", text)
         fechas.append(fecha.group(1) if fecha else "")
+        st.write(f"Fecha de compra: {fecha.group(1) if fecha else ''}")
 
         # Información de contacto
         contacto = re.search(r"Contacto:\s*([A-Za-z0-9@\.]+)", text)
         contactos.append(contacto.group(1) if contacto else "")
+        st.write(f"Información de contacto: {contacto.group(1) if contacto else ''}")
 
     depurado_data = pd.DataFrame({
         "Número de Serie": series,
