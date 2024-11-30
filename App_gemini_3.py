@@ -33,7 +33,7 @@ def cargar_datos(url):
 # Función para depurar y clasificar datos usando regex
 def depurar_datos(data):
     series = []
-    nombres_producto = []
+    nombres = []
     valores = []
     fechas = []
     contactos = []
@@ -45,9 +45,9 @@ def depurar_datos(data):
         serie = re.search(r"\b\d{6}\b", text)
         series.append(serie.group(0) if serie else "N/A")
 
-        # Nombre del producto (letras sin espacios ni números)
-        nombre_producto = re.search(r"\b[A-Za-z]{1,10}\b", text)
-        nombres_producto.append(nombre_producto.group(0) if nombre_producto else "N/A")
+        # Nombre del producto
+        nombre = re.search(r"Nombre: ([A-Za-z\s]+)", text)
+        nombres.append(nombre.group(1) if nombre else "N/A")
 
         # Valor del producto (comienza con $)
         valor = re.search(r"\$([0-9]+\.[0-9]{2})", text)
@@ -57,16 +57,13 @@ def depurar_datos(data):
         fecha = re.search(r"\b\d{2}/\d{2}/\d{2}\b", text)
         fechas.append(fecha.group(0) if fecha else "N/A")
 
-        # Información de contacto (nombre de la persona, correo y número de teléfono)
-        contacto_nombre = re.search(r"\b[A-Za-z\s]+\b", text)
-        contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
-        contacto = [contacto_nombre.group(0) if contacto_nombre else "N/A"]
-        contacto.extend(contacto_email_tel)
+        # Información de contacto (correo y/o teléfono)
+        contacto = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
     depurado_data = pd.DataFrame({
         "Número de Serie": series,
-        "Nombre del Producto": nombres_producto,
+        "Nombre del Producto": nombres,
         "Valor": valores,
         "Fecha de Compra": fechas,
         "Contacto": contactos
