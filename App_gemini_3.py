@@ -73,4 +73,4 @@ if data is not None:
 
             # Vista previa del archivo generado
             st.write("Vista previa del archivo generado:")
-            st.dataframe(data
+            st.dataframe(data)
