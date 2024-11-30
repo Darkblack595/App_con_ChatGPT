@@ -88,11 +88,11 @@ def convertir_a_excel(data):
             worksheet = writer.sheets['Sheet1']
 
             # Formateo de columnas
-            worksheet.set_column('A:A', 20)
-            worksheet.set_column('B:B', 30)
-            worksheet.set_column('C:C', 15)
-            worksheet.set_column('D:D', 20)
-            worksheet.set_column('E:E', 40)
+            worksheet.set_column('A:A', 20)  # Número de Serie
+            worksheet.set_column('B:B', 30)  # Nombre del Producto
+            worksheet.set_column('C:C', 15)  # Valor
+            worksheet.set_column('D:D', 20)  # Fecha de Compra
+            worksheet.set_column('E:E', 40)  # Contacto
 
         processed_data = output.getvalue()
         return processed_data
