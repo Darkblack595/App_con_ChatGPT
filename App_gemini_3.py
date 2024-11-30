@@ -38,7 +38,7 @@ def depurar_datos(data):
     fechas = []
     contactos = []
 
-    nombre_persona_re = re.compile(r"^[A-Z][a-z]+\s?[A-Z][a-z]+$")
+    nombre_persona_re = re.compile(r"^[A-Z][a-z]+(\s[A-Z][a-z]+)?$")
     nombre_producto_re = re.compile(r"^[A-Z][a-z]+$")
     
     for index, row in data.iterrows():
