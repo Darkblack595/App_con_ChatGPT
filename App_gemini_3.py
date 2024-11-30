@@ -42,24 +42,24 @@ def depurar_datos(data):
         text = ' '.join(row.dropna().astype(str))  # Combinar todas las columnas en una sola cadena de texto
 
         # Número de serie del producto
-        serie = re.search(r"Serie:\s*([A-Za-z0-9]+)", text)
+        serie = re.search(r"Serie: ([A-Za-z0-9]+)", text)
         series.append(serie.group(1) if serie else "N/A")
 
         # Nombre del producto
-        nombre = re.search(r"Nombre:\s*([A-Za-z\s]+)", text)
+        nombre = re.search(r"Nombre: ([A-Za-z\s]+)", text)
         nombres.append(nombre.group(1) if nombre else "N/A")
 
         # Valor del producto
-        valor = re.search(r"Valor:\s*([\d]+\.[\d]{2})", text)
+        valor = re.search(r"Valor: ([0-9]+\.[0-9]{2})", text)
         valores.append(valor.group(1) if valor else "N/A")
 
         # Fecha de compra del producto
-        fecha = re.search(r"Fecha:\s*([0-9]{2}/[0-9]{2}/[0-9]{2})", text)
+        fecha = re.search(r"Fecha: ([0-9]{2}/[0-9]{2}/[0-9]{2})", text)
         fechas.append(fecha.group(1) if fecha else "N/A")
 
         # Información de contacto
-        contacto = re.findall(r"([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}|[A-Za-z0-9._%+-]+\.[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})", text)
-        contactos.append(contacto[0] if contacto else "N/A")
+        contacto = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,7}", text)
+        contactos.append(contacto.group(0) if contacto else "N/A")
 
     depurado_data = pd.DataFrame({
         "Número de Serie": series,
