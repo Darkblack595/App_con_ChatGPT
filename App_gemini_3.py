@@ -57,10 +57,10 @@ def depurar_datos(data):
         fecha = re.search(r"\b\d{2}/\d{2}/\d{2}\b", text)
         fechas.append(fecha.group(0) if fecha else "N/A")
 
-        # Información de contacto (correo y/o teléfono y nombre)
+        # Información de contacto (nombre de la persona, correo y número de teléfono)
+        contacto_nombre = re.search(r"\b[A-Za-z\s]+\b", text)
         contacto_email_tel = re.findall(r"(\+\d{1,3}\s?\d+|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b)", text)
-        nombre_persona = re.findall(r"\b[A-Za-z\s]{2,}\b", text)
-        contacto = [n for n in nombre_persona if not re.match(r".*@.*", n)]
+        contacto = [contacto_nombre.group(0) if contacto_nombre else "N/A"]
         contacto.extend(contacto_email_tel)
         contactos.append(', '.join(contacto) if contacto else "N/A")
 
