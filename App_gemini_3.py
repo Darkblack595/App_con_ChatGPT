@@ -57,7 +57,7 @@ def depurar_datos(data):
 
         # Descartar nombres de personas para la búsqueda del nombre del producto
         if contacto_nombre:
-            text = text.replace(contacto_nombre.group(0), "")
+            text = text.replace(contacto_nombre[0], "")
 
         # Nombre del producto
         nombre_producto = re.search(r"\b[A-Z][a-z]+\b", text)  # Ajusta esta expresión regular
