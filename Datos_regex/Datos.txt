@@ -1,0 +1,1 @@
+Este directorio contiene el conjunto de datos a analizar en el taller de regex de la segunda semana de PPI
