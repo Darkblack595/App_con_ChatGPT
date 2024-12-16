@@ -15,6 +15,8 @@ def calcular_tiempos_entrega(data):
 # Configuración de la aplicación
 st.title("Seguimiento de Pedidos de Ecommerce")
 
+st.write("Hecho por Juan Pablo Gaviria Orozco")
+
 # Leer datos desde una URL
 url = 'https://raw.githubusercontent.com/gabrielawad/programacion-para-ingenieria/refs/heads/main/archivos-datos/pandas/pedidos_ecommerce.csv'  # Reemplaza con la URL del CSV
 data = pd.read_csv(url, sep=",", header=0)
