@@ -15,8 +15,10 @@ def calcular_tiempos_entrega(data):
 # Configuración de la aplicación
 st.title("Seguimiento de Pedidos de Ecommerce")
 
+# Cargar URl
+url = "https://raw.githubusercontent.com/gabrielawad/programacion-para-ingenieria/refs/heads/main/archivos-datos/pandas/pedidos_ecommerce.csv"
 # Subir archivo CSV
-uploaded_file = st.file_uploader("Sube tu archivo CSV", type="csv")
+uploaded_file = pd.read_csv(url, sep=",", header=0)
 
 if uploaded_file is not None:
     # Cargar datos
